@@ -4,7 +4,7 @@
     align-items: center;
     max-width: 900px;
     margin: 30px auto;
-    padding: 10px 30px 30px;
+    padding: 10px 30px 30px 0px;
     border-radius: 10px;
     box-shadow: 0 0 10px grey;
     background-color: #fefefe;
@@ -19,11 +19,7 @@ table {
 td,
 th {
     border: 1px solid #dddddd;
-    text-align: left;
     padding: 8px;
-}
-
-td {
     text-align: center;
 }
 
@@ -35,4 +31,21 @@ tr:nth-child(even) {
     min-width: 30px;
     width: 40%;
     border-radius: 50%;
+}
+
+.pagination-button {
+    margin: 5px;
+    cursor: pointer;
+    border: 0;
+    min-height: 25px;
+    min-width: 25px;
+    border-radius: 50%;
+}
+
+.pagination-button:hover {
+    background-color: grey;
+}
+
+.selected {
+    background-color: grey;
 }

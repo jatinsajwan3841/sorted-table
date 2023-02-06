@@ -3,7 +3,8 @@ import "./App.css";
 
 const App = () => {
     const [studData, setStudData] = React.useState([]);
-    const [forceRender, setForceRender] = React.useState(0);
+    const [presentPageData, setPresentPageData] = React.useState([]);
+    const [presentPageVal, setPresentPageVal] = React.useState(1);
 
     const getData = async () => {
         let dat = await fetch(
@@ -11,12 +12,20 @@ const App = () => {
         );
         dat = await dat.json();
         setStudData(dat);
+        setPresentPageData(dat.slice(0, 5));
     };
 
     const sortData = () => {
         let sortedDat = studData.sort((a, b) => a.class - b.class);
         setStudData(sortedDat);
-        setForceRender((prev) => prev + 1);
+        setPresentPageData(
+            sortedDat.slice(presentPageVal * 5 - 5, presentPageVal * 5)
+        );
+    };
+
+    const onPageChange = (pageVal) => {
+        setPresentPageVal(pageVal);
+        setPresentPageData(studData.slice(pageVal * 5 - 5, pageVal * 5));
     };
 
     React.useEffect(() => {
@@ -37,11 +46,15 @@ const App = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {studData &&
-                        studData.map((data, i) => (
+                    {presentPageData &&
+                        presentPageData.map((data, i) => (
                             <tr key={i}>
                                 <td>
-                                    <img src={data.avatar} className="avatar" />
+                                    <img
+                                        src={data.avatar}
+                                        alt="avatar"
+                                        className="avatar"
+                                    />
                                 </td>
                                 <td>{data.name}</td>
                                 <td>{data.class}</td>
@@ -51,6 +64,21 @@ const App = () => {
                         ))}
                 </tbody>
             </table>
+            <div>
+                {[...Array(Math.ceil(studData.length / 5))].map((val, ind) => (
+                    <button
+                        className={
+                            ind + 1 == presentPageVal
+                                ? "pagination-button selected"
+                                : "pagination-button"
+                        }
+                        key={ind}
+                        onClick={() => onPageChange(ind + 1)}
+                    >
+                        {ind + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };
