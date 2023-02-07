@@ -5,6 +5,7 @@ const App = () => {
     const [studData, setStudData] = React.useState([]);
     const [presentPageData, setPresentPageData] = React.useState([]);
     const [presentPageVal, setPresentPageVal] = React.useState(1);
+    const [filteredData, setFilteredData] = React.useState([]);
 
     const getData = async () => {
         let dat = await fetch(
@@ -12,20 +13,35 @@ const App = () => {
         );
         dat = await dat.json();
         setStudData(dat);
+        setFilteredData(dat);
         setPresentPageData(dat.slice(0, 5));
     };
 
     const sortData = () => {
-        let sortedDat = studData.sort((a, b) => a.class - b.class);
-        setStudData(sortedDat);
+        let sortedDat = filteredData.sort((a, b) => a.class - b.class);
+        setFilteredData(sortedDat);
         setPresentPageData(
             sortedDat.slice(presentPageVal * 5 - 5, presentPageVal * 5)
         );
     };
 
+    const filterData = (e) => {
+        const option = e.target.value;
+        if (option === "All") {
+            setFilteredData(studData);
+            setPresentPageVal(1);
+            setPresentPageData(studData.slice(0, 5));
+        } else {
+            let filtDat = studData.filter((d) => d.class === option);
+            setFilteredData(filtDat);
+            setPresentPageVal(1);
+            setPresentPageData(filtDat.slice(0, 5));
+        }
+    };
+
     const onPageChange = (pageVal) => {
         setPresentPageVal(pageVal);
-        setPresentPageData(studData.slice(pageVal * 5 - 5, pageVal * 5));
+        setPresentPageData(filteredData.slice(pageVal * 5 - 5, pageVal * 5));
     };
 
     React.useEffect(() => {
@@ -35,6 +51,16 @@ const App = () => {
         <div className="val-table">
             <button onClick={sortData}>Sort by Class</button>
             <h2>Fake Student Data</h2>
+            <label htmlFor="class">Filter by class:</label>
+
+            <select name="class" id="cars" onChange={filterData}>
+                <option value="All">All</option>
+                {[...Array(9)].map((val, ind) => (
+                    <option key={ind} value={ind + 1}>
+                        {ind + 1}
+                    </option>
+                ))}
+            </select>
             <table>
                 <thead>
                     <tr>
@@ -65,19 +91,21 @@ const App = () => {
                 </tbody>
             </table>
             <div>
-                {[...Array(Math.ceil(studData.length / 5))].map((val, ind) => (
-                    <button
-                        className={
-                            ind + 1 == presentPageVal
-                                ? "pagination-button selected"
-                                : "pagination-button"
-                        }
-                        key={ind}
-                        onClick={() => onPageChange(ind + 1)}
-                    >
-                        {ind + 1}
-                    </button>
-                ))}
+                {[...Array(Math.ceil(filteredData.length / 5))].map(
+                    (val, ind) => (
+                        <button
+                            className={
+                                ind + 1 == presentPageVal
+                                    ? "pagination-button selected"
+                                    : "pagination-button"
+                            }
+                            key={ind}
+                            onClick={() => onPageChange(ind + 1)}
+                        >
+                            {ind + 1}
+                        </button>
+                    )
+                )}
             </div>
         </div>
     );
